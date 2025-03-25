@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* DEBUG: Destacar ícones */
+        .fa-bars, .fa-times {
+            border: 2px solid red !important;
+            background: yellow !important;
+            color: black !important;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <title>Rapha's Birthday Website</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+</head>
+<body>
+    <section class="header">
+        <nav>
+            <!--Insere uma logo no canto-->
+            <a href="index.html"><img src="images/logo.png"></a>
+            <div class="nav-links" id="navLinks">
+                <i class="fa fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <!--Muda os botoes de opçoes das paginas-->
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT</a></li>
+                    <!-- <li><a href="course.html">COURSE</a></li> -->
+                    <li><a href="contact.html">CONTACT</a></li>
+                    <li><a href="blog.html">LETTER</a></li>
+                </ul>
+            </div>
+            <i class="fa fa-bars" onclick="showMenu()"></i>
+        </nav>
+
+    <div class="text-box">
+        <!-- titulo principal e legenda + link -->
+        <h1>Feliz Aniversário <br><i class="fa fa-birthday-cake"></i>  Meu Amor !!!</h1>
+        <p> Essa é uma pequena homenagem que eu fiz, <br> mas você merece o mundo e um pouco mais <i class="fa fa-heart"></i> </p>
+        <a href="" class="hero-btn">Role para baixo <i class="fa fa-arrow-down"></i></a>
+    </div>
+
+    </section>
+
+    <!----------- Pagina de cursos ------------->
+    <section class="course">
+        <h1> Guiazinho do Site <i class="fa fa-book"></i> </h1>
+        <p> Pequenas informações sobre cada uma das <br> sessões do canto superior direito.</p>
+
+        <div class="row">
+            <div class="course-col">
+                <h3> HOME </h3>
+                <p> A página inicial de navegaçaõ do site(essa de agora) </p>
+            </div>
+
+            <div class="course-col">
+                <h3> ABOUT </h3>
+                <p> Página para descrever melhor a aniversariante </p>
+            </div>
+
+            <div class="course-col">
+                <h3> CONTACT </h3>
+                <p> Mostra algumas opções de contacto e localização </p>
+            </div>
+
+            <div class="course-col">
+                <h3> LETTER </h3>
+                <p> Cartinha <br><i class="fa fa-exclamation-triangle"></i>DEVE SER ESTRITAMENTE VISTA POR ÚLTIMO<i class="fa fa-exclamation-triangle"></i></p>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!----------- campus ------------>
+    <section class="campus">
+        <h1>Obrigado por ser essa pessoa maravilhosa <i class="fa fa-gratipay"></i></h1>
+        <p>Sem você minha vida não teria nenhum sentido, não só hoje mas todos os dias eu sou grato por ter você</p>
+
+        <div class="row">
+            <div class="campus-col">
+                <img src="images/london.png">
+                <div class="layer">
+                    <h3>Sempre sendo forte e passando por qualquer situação, por mais difícil que ela seja. Tenho muito orgulho de você meu amor!</h3>
+                </div>
+            </div>
+            <div class="campus-col">
+                <img src="images/new.png">
+                <div class="layer">
+                    <h3>Agora com os seus 18 aninhos, mas já madura desde sempre. Responsável e sensata, ao mesmo tempo engraçada e divertida.</h3>
+                </div>
+            </div>
+            <div class="campus-col">
+                <img src="images/wa.png">
+                <div class="layer">
+                    <h3>Sempre me apoiando e me amando da forma mais intensa possível. Sem você eu não conseguiria sequer sair do lugar.</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-------facilities--------->
+
+    <section class="facilities">
+        <h1>Finalmente 18 anos!!!!</h1>
+        <p>Aqui vai agumas vantagens de ser maior de idade:</p>
+
+        <div class="row">
+            <div class="facilities-col">
+                <img src="images/library.png">
+                <h3>Ter responsabilidade penal</h3>
+                <p>Agora, para qualquer tipo de crime que cometer, você terá que responder judicialmente. </p>
+            </div>
+            <div class="facilities-col">
+                <img src="images/basket.png">
+                <h3>Tirar a licença de motorista</h3>
+                <p>    Vai poder dar role de carrinho (imagem meramente ilustrativa, sem piadas envolvidas).</p>
+            </div>
+            <div class="facilities-col">
+                <img src="images/cafeteria.png">
+                <h3>Direito ao Trabalho Integral</h3>
+                <p>Agora você pode arrumar emprego com todos os benefícios de ser CLT: nenhum.</p>
+            </div>
+        </div>
+    </section>
+
+    <!----------testimonial------------>
+    <section class="testimonials">
+        <h1>O que os usuários dizem: </h1>
+        <p>Sobre a Rapha</p>
+
+        <div class="row">
+            <div class="testimonial-col">
+                <img src="images/user1.png">
+                <div>
+                    <p>Simpleste fenomenal, melhor pessoa que eu já conheci! Meio chatinha as vezes... e também dramática, mas eu gosto mesmo assim.</p>
+                    <h3>Harttur Oliveira Pimenta</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                </div>
+            </div>
+            <div class="testimonial-col">
+                <img src="images/user2.png">
+                <div>
+                    <p>Nunca conheci algum tão feio, mas as suas outras qualidades fazem você esquecer isso! Meio fidida também, mas nada que um banho não resolva. Amei!</p>
+                    <h3>Harttur Oliveira Pimenta</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-o"></i>
+                    <i class="fa fa-star-o"></i>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+<!--------- call to action --------->
+
+<section class="cta">
+    <h1>Se você deseja saber um pouco mais sobre quem é a Raphaela Silva Ferreira, clique nesse botão</h1>
+    <a href="about.html" class="hero-btn">Sobre ela</a>
+</section>
+
+
+<!--------- footer --------->
+<section class="footer">
+    <h4>About The Website</h4>
+    <p> Esse site é para homenagear seu Niver de 18,<br>então espero que goste!</p>
+    <p>Made with <i class="fa fa-heart-o"></i> by Tutu </p>
+</section>
+
+
+<script>
+    // Menu Mobile Avançado
+    const navLinks = document.getElementById('navLinks');
+    const menuIcon = document.querySelector('.fa-bars');
+    const closeIcon = document.querySelector('.fa-times');
+
+    function showMenu() {
+        navLinks.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideMenu() {
+        navLinks.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Fechar menu ao clicar em um link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', hideMenu);
+    });
+
+    // Fechar ao clicar fora (opcional)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && 
+            !e.target.closest('.nav-links') && 
+            !e.target.closest('.fa-bars') && 
+            navLinks.classList.contains('active')) {
+            hideMenu();
+        }
+    });
+</script>
+
+</body>
+</html>

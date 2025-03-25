@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <title>Rapha's Birthday Website</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+</head>
+<body>
+    <section class="sub-header">
+        <nav>
+            <!--Insere uma logo no canto-->
+            <a href="index.html"><img src="images/logo.png"></a>
+            <div class="nav-links" id="navLinks">
+                <i class="fa fa-times" onclick="hideMenu()"></i>
+                <ul>
+                    <!--Muda os botoes de opçoes das paginas-->
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT</a></li>
+                    <!-- <li><a href="course.html">COURSE</a></li> -->
+                    <li><a href="contact.html">CONTACT</a></li>
+                    <li><a href="blog.html">LETTER</a></li>
+                </ul>
+            </div>
+            <i class="fa fa-bars" onclick="showMenu()"></i>
+        </nav>
+        <h1>About Her</h1>
+    </section> 
+
+
+<!--------------About Us Content------------------->
+
+</head>
+<body>
+
+<!-- Contêiner central para vídeos -->
+<div class="container">
+    <div class="video-card">
+        <video src="images/Video1.mp4" loop muted playsinline></video>
+        <div class="video-content"> <!-- Nova div para agrupar info + botões -->
+            <div class="info">
+                <h3>Título do Vídeo</h3>
+                <p>Descrição do vídeo</p>
+            </div>
+            <div class="actions">
+                <button onclick="likeVideo(this)">❤️ 0</button>
+                <button onclick="alert('Comentários em breve')">💬</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="video-card">
+        <video src="images/Video1.mp4" loop muted playsinline></video>
+        <div class="video-content"> <!-- Nova div para agrupar info + botões -->
+            <div class="info">
+                <h3>Título do Vídeo</h3>
+                <p>Descrição do vídeo</p>
+            </div>
+            <div class="actions">
+                <button onclick="likeVideo(this)">❤️ 0</button>
+                <button onclick="alert('Comentários em breve')">💬</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!------------------ footer ----------------------->
+<section class="footer">
+    <h4>About The Website</h4>
+    <p> Esse site é para homenagear seu Niver de 18,<br>então espero que goste!</p>
+    <p>Made with <i class="fa fa-heart-o"></i> by Tutu </p>
+</section>
+
+<script>
+    // Menu Mobile Avançado
+    const navLinks = document.getElementById('navLinks');
+    const menuIcon = document.querySelector('.fa-bars');
+    const closeIcon = document.querySelector('.fa-times');
+
+    function showMenu() {
+        navLinks.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideMenu() {
+        navLinks.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Fechar menu ao clicar em um link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', hideMenu);
+    });
+
+    // Fechar ao clicar fora (opcional)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && 
+            !e.target.closest('.nav-links') && 
+            !e.target.closest('.fa-bars') && 
+            navLinks.classList.contains('active')) {
+            hideMenu();
+        }
+    });
+</script>
+
+
+<!------ JAVA SCRIPT Play/Pause -------->   
+    <script>
+
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        });
+
+    </script>
+
+
+<!------ JAVA SCRIPT Play/Pause -------->  
+    <script>    
+
+        function likeVideo(button) {
+            let count = parseInt(button.innerText.split(' ')[1]);
+            button.innerText = '❤️ 10.000';
+        }
+
+    </script>
+
+</body>
+</html>
+
+
