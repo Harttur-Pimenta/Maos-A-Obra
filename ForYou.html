@@ -75,39 +75,6 @@
     <p>Made with <i class="fa fa-heart-o"></i> by Tutu </p>
 </section>
 
-<script>
-    // Menu Mobile Avançado
-    const navLinks = document.getElementById('navLinks');
-    const menuIcon = document.querySelector('.fa-bars');
-    const closeIcon = document.querySelector('.fa-times');
-
-    function showMenu() {
-        navLinks.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function hideMenu() {
-        navLinks.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }
-
-    // Fechar menu ao clicar em um link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', hideMenu);
-    });
-
-    // Fechar ao clicar fora (opcional)
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && 
-            !e.target.closest('.nav-links') && 
-            !e.target.closest('.fa-bars') && 
-            navLinks.classList.contains('active')) {
-            hideMenu();
-        }
-    });
-</script>
-
-
 <!------ JAVA SCRIPT Play/Pause -------->   
     <script>
 
@@ -124,7 +91,7 @@
     </script>
 
 
-<!------ JAVA SCRIPT Play/Pause -------->  
+<!------ JAVA SCRIPT LIKE -------->  
     <script>    
 
         function likeVideo(button) {
