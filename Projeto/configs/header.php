@@ -1,0 +1,48 @@
+<?php
+
+$nav_items = [
+    'dashboard'   => ['href' => '../dashboard/index.php', 'label' => 'Dashboard'],
+    'obras'       => ['href' => '../obras/index.php',      'label' => 'Obras'],
+    'diario'      => ['href' => '../diario/index.php',     'label' => 'Diário da Obra'],
+    'custos'      => ['href' => '../custos/index.php',     'label' => 'Materiais e Custos'],
+    'ocorrencias' => ['href' => '../ocorrencias/index.php','label' => 'Ocorrências'],
+];
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../configs/style.css">
+    <title>Mãos à Obra — <?= ucfirst($current_page ?? 'Sistema') ?></title>
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="header">
+    <div class="container">
+
+        <a href="../dashboard/index.php" class="logo">
+            <div class="logo-mark">MO</div>
+            <div class="logo-text">Mãos à <span>Obra</span></div>
+        </a>
+
+        <nav class="navbar">
+            <?php foreach ($nav_items as $key => $item): ?>
+            <a href="<?= $item['href'] ?>"
+               class="<?= ($current_page ?? '') === $key ? 'active' : '' ?>">
+                <?= $item['label'] ?>
+            </a>
+            <?php endforeach; ?>
+        </nav>
+
+        <div class="header-actions">
+            <div class="btn-icon" title="Notificações">🔔</div>
+            <div class="avatar" title="Meu perfil">JS</div>
+        </div>
+
+    </div>
+</header>
