@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $current_page = 'custos';
 
 require_once '../configs/banco.php';
@@ -16,12 +20,19 @@ $sql = "SELECT
             ON custos_obra.obra_id = obras.id
 
         LEFT JOIN usuarios
-            ON custos_obra.usuario_id = usuarios.id";
+            ON custos_obra.usuario_id = usuarios.id
+
+        WHERE 1 = 1";
 
 $params = [];
 
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+    $sql .= " AND obras.responsavel_id = :usuario_id";
+    $params[':usuario_id'] = $_SESSION['usuario_id'];
+}
+
 if (!empty($busca)) {
-    $sql .= " WHERE (
+    $sql .= " AND (
                     custos_obra.descricao LIKE :busca
                     OR custos_obra.tipo LIKE :busca
                     OR obras.nome LIKE :busca
@@ -52,7 +63,7 @@ $custos = $stmt->fetchAll();
                 <span class="search-icon">🔍</span>
 
                 <input 
-                    type="text"
+                    type="text" 
                     name="busca"
                     placeholder="Buscar custo, material, obra..."
                     value="<?= htmlspecialchars($busca) ?>"

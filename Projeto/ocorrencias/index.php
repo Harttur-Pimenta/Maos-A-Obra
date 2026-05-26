@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $current_page = 'ocorrencias';
 
 require_once '../configs/banco.php';
@@ -16,13 +20,24 @@ $sql = "SELECT
             ON ocorrencias.obra_id = obras.id
 
         LEFT JOIN usuarios
-            ON ocorrencias.usuario_id = usuarios.id";
+            ON ocorrencias.usuario_id = usuarios.id
+
+        WHERE 1 = 1";
 
 $params = [];
 
+/* Engenheiro vê apenas ocorrências das obras dele */
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+
+    $sql .= " AND obras.responsavel_id = :usuario_id";
+
+    $params[':usuario_id'] = $_SESSION['usuario_id'];
+}
+
+/* Busca */
 if (!empty($busca)) {
 
-    $sql .= " WHERE (
+    $sql .= " AND (
                     ocorrencias.titulo LIKE :busca
                     OR ocorrencias.categoria LIKE :busca
                     OR ocorrencias.status LIKE :busca

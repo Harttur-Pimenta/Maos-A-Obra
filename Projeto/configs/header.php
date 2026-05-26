@@ -41,9 +41,14 @@ $nav_items = [
         </nav>
 
         <div class="header-actions">
-            <div class="btn-icon" title="Notificações">🔔</div>
-            <div class="avatar" title="Meu perfil">JS</div>
-        </div>
+            <a href="../login/logout.php" class="btn-logout">
+                Sair
+    </a>
+    
+    <div class="avatar" title="Meu perfil">
+        <?= strtoupper(substr($_SESSION['usuario_nome'], 0, 1)) ?>
+    </div>
+
 
     </div>
 </header>

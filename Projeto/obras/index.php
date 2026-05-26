@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $current_page = 'obras';
 
 require_once '../configs/banco.php';
@@ -12,13 +16,21 @@ $sql = "SELECT
         FROM obras
 
         LEFT JOIN usuarios 
-            ON obras.responsavel_id = usuarios.id";
+            ON obras.responsavel_id = usuarios.id
+
+        WHERE 1 = 1";
 
 $params = [];
 
-if (!empty($busca)) {
+/* Se for engenheiro, mostra só as obras dele */
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+    $sql .= " AND obras.responsavel_id = :usuario_id";
+    $params[':usuario_id'] = $_SESSION['usuario_id'];
+}
 
-    $sql .= " WHERE (
+/* Busca */
+if (!empty($busca)) {
+    $sql .= " AND (
                     obras.nome LIKE :busca
                     OR obras.endereco LIKE :busca
                     OR obras.status LIKE :busca
@@ -31,7 +43,6 @@ if (!empty($busca)) {
 $sql .= " ORDER BY obras.id DESC";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute($params);
 
 $obras = $stmt->fetchAll();

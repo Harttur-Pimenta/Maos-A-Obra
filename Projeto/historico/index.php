@@ -1,5 +1,10 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $current_page = 'historico';
+
 require_once '../configs/banco.php';
 include '../configs/header.php';
 
@@ -11,9 +16,47 @@ $sql = "SELECT
         LEFT JOIN usuarios
             ON historico.usuario_id = usuarios.id
 
-        ORDER BY historico.criado_em DESC";
+        WHERE 1 = 1";
 
-$stmt = $pdo->query($sql);
+$params = [];
+
+/* Engenheiro vê apenas histórico das obras dele */
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+
+    $sql .= " AND (
+                    (
+                        historico.tipo = 'custo'
+                        AND historico.referencia_id IN (
+                            SELECT custos_obra.id
+                            FROM custos_obra
+                            INNER JOIN obras
+                                ON custos_obra.obra_id = obras.id
+                            WHERE obras.responsavel_id = :usuario_id
+                        )
+                    )
+
+                    OR
+
+                    (
+                        historico.tipo = 'ocorrencia'
+                        AND historico.referencia_id IN (
+                            SELECT ocorrencias.id
+                            FROM ocorrencias
+                            INNER JOIN obras
+                                ON ocorrencias.obra_id = obras.id
+                            WHERE obras.responsavel_id = :usuario_id
+                        )
+                    )
+                )";
+
+    $params[':usuario_id'] = $_SESSION['usuario_id'];
+}
+
+$sql .= " ORDER BY historico.criado_em DESC";
+
+$stmt = $pdo->prepare($sql);
+
+$stmt->execute($params);
 
 $historicos = $stmt->fetchAll();
 ?>

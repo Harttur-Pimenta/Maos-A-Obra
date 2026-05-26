@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $current_page = 'obras';
 require_once '../configs/banco.php';
 include '../configs/header.php';

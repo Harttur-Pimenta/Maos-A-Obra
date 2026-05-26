@@ -1,48 +1,69 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $current_page = 'dashboard';
 
-/* Importa os dados gerais */
 require_once '../configs/banco.php';
 
-$totalObras = $pdo->query("SELECT COUNT(*) FROM obras")->fetchColumn();
+$params = [];
+$filtroEngenheiro = "";
 
-$totalOcorrencias = $pdo->query("SELECT COUNT(*) FROM ocorrencias")->fetchColumn();
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+    $filtroEngenheiro = " WHERE obras.responsavel_id = :usuario_id";
+    $params[':usuario_id'] = $_SESSION['usuario_id'];
+}
 
-$custoTotal = $pdo->query("
-    SELECT COALESCE(SUM(valor_realizado), 0) 
-    FROM custos_obra
-")->fetchColumn();
+$sqlTotalObras = "SELECT COUNT(*) FROM obras" . $filtroEngenheiro;
+$stmt = $pdo->prepare($sqlTotalObras);
+$stmt->execute($params);
+$totalObras = $stmt->fetchColumn();
 
-$obrasFinalizadas = $pdo->query("SELECT COUNT(*) FROM obras WHERE status = 'finalizada'")->fetchColumn();
+$sqlTotalOcorrencias = "SELECT COUNT(*) 
+                        FROM ocorrencias
+                        INNER JOIN obras ON ocorrencias.obra_id = obras.id"
+                        . $filtroEngenheiro;
 
-/* Importa os dados das obras */
+$stmt = $pdo->prepare($sqlTotalOcorrencias);
+$stmt->execute($params);
+$totalOcorrencias = $stmt->fetchColumn();
+
+$sqlCustoTotal = "SELECT COALESCE(SUM(custos_obra.valor_realizado), 0)
+                  FROM custos_obra
+                  INNER JOIN obras ON custos_obra.obra_id = obras.id"
+                  . $filtroEngenheiro;
+
+$stmt = $pdo->prepare($sqlCustoTotal);
+$stmt->execute($params);
+$custoTotal = $stmt->fetchColumn();
+
+$sqlObrasFinalizadas = "SELECT COUNT(*) 
+                        FROM obras"
+                        . $filtroEngenheiro .
+                        ($_SESSION['usuario_perfil'] == 'engenheiro' ? " AND" : " WHERE") .
+                        " obras.status = 'finalizada'";
+
+$stmt = $pdo->prepare($sqlObrasFinalizadas);
+$stmt->execute($params);
+$obrasFinalizadas = $stmt->fetchColumn();
+
 $sqlObras = "SELECT 
                 obras.*,
                 usuarios.nome AS responsavel
             FROM obras
             LEFT JOIN usuarios 
                 ON obras.responsavel_id = usuarios.id
-            WHERE obras.status != 'finalizada'
-            ORDER BY obras.id DESC
-            LIMIT 5";
+            WHERE obras.status != 'finalizada'";
 
-$obrasAndamento = $pdo->query($sqlObras)->fetchAll();
+if ($_SESSION['usuario_perfil'] == 'engenheiro') {
+    $sqlObras .= " AND obras.responsavel_id = :usuario_id";
+}
 
-/* Importa os dados Atividade */
-$sqlHistorico = "
-    SELECT
-        historico.*,
-        usuarios.nome AS usuario
-    FROM historico
+$sqlObras .= " ORDER BY obras.id DESC LIMIT 5";
 
-    LEFT JOIN usuarios
-        ON historico.usuario_id = usuarios.id
-
-    ORDER BY historico.criado_em DESC
-    LIMIT 8
-";
-
-$historicos = $pdo->query($sqlHistorico)->fetchAll();
+$stmt = $pdo->prepare($sqlObras);
+$stmt->execute($params);
+$obrasAndamento = $stmt->fetchAll();
 
 include '../configs/header.php';
 ?>
