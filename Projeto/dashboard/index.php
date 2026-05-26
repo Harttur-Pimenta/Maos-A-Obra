@@ -1,16 +1,48 @@
 <?php
 $current_page = 'dashboard';
 
-/* Importa os dados */
+/* Importa os dados gerais */
 require_once '../configs/banco.php';
 
 $totalObras = $pdo->query("SELECT COUNT(*) FROM obras")->fetchColumn();
 
-$custoTotal = $pdo->query("SELECT SUM(valor_realizado) FROM custos_obra")->fetchColumn();
+$totalOcorrencias = $pdo->query("SELECT COUNT(*) FROM ocorrencias")->fetchColumn();
+
+$custoTotal = $pdo->query("
+    SELECT COALESCE(SUM(valor_realizado), 0) 
+    FROM custos_obra
+")->fetchColumn();
 
 $obrasFinalizadas = $pdo->query("SELECT COUNT(*) FROM obras WHERE status = 'finalizada'")->fetchColumn();
 
-$custoTotal = $custoTotal ?: 0;
+/* Importa os dados das obras */
+$sqlObras = "SELECT 
+                obras.*,
+                usuarios.nome AS responsavel
+            FROM obras
+            LEFT JOIN usuarios 
+                ON obras.responsavel_id = usuarios.id
+            WHERE obras.status != 'finalizada'
+            ORDER BY obras.id DESC
+            LIMIT 5";
+
+$obrasAndamento = $pdo->query($sqlObras)->fetchAll();
+
+/* Importa os dados Atividade */
+$sqlHistorico = "
+    SELECT
+        historico.*,
+        usuarios.nome AS usuario
+    FROM historico
+
+    LEFT JOIN usuarios
+        ON historico.usuario_id = usuarios.id
+
+    ORDER BY historico.criado_em DESC
+    LIMIT 8
+";
+
+$historicos = $pdo->query($sqlHistorico)->fetchAll();
 
 include '../configs/header.php';
 ?>
@@ -32,11 +64,6 @@ include '../configs/header.php';
         </div>
     </div>
 
-    <div class="alert alert-warning">
-        ⚠️ <strong>2 obras</strong> com prazo próximo ao vencimento nos próximos 7 dias.
-        <a href="../obras/index.php" style="color:inherit;text-decoration:underline;">Ver obras</a>
-    </div>
-
     <div class="stats-grid">
         <div class="stat-card">
             <span class="stat-icon">🏗️</span>
@@ -47,13 +74,13 @@ include '../configs/header.php';
         <div class="stat-card">
             <span class="stat-icon">💰</span>
             <div class="stat-label">Custo Total (R$)</div>
-            <div class="stat-value"><?= $custoTotal ?></div>
+            <div class="stat-value"><?= 'R$ ' . number_format($custoTotal, 2, ',', '.') ?></div>
 
         </div>
         <div class="stat-card">
             <span class="stat-icon">⚠️</span>
             <div class="stat-label">Ocorrências Abertas</div>
-            <div class="stat-value">7</div>
+            <div class="stat-value"><?= $totalOcorrencias ?></div>
             <!--<div class="stat-meta"><span class="down">↓ 2</span> resolvidas hoje</div>-->
         </div>
         <div class="stat-card">
@@ -80,32 +107,96 @@ include '../configs/header.php';
                         </tr>
                     </thead>
                     <tbody>
+                       <?php foreach ($obrasAndamento as $obra): ?>
                         <?php
-                        $obras = [
-                            ['nome'=>'Residencial Jardins',       'cidade'=>'Uberlândia, MG', 'resp'=>'João Silva',   'pct'=>68, 'prazo'=>'15/08/2025', 'status'=>'badge-success', 'label'=>'Em dia'],
-                            ['nome'=>'Edifício Comercial Centro',  'cidade'=>'Uberlândia, MG', 'resp'=>'Maria Costa',  'pct'=>41, 'prazo'=>'30/06/2025', 'status'=>'badge-warning', 'label'=>'Atenção'],
-                            ['nome'=>'Reforma Escolar Estadual',   'cidade'=>'Araguari, MG',   'resp'=>'Carlos Melo',  'pct'=>89, 'prazo'=>'10/06/2025', 'status'=>'badge-success', 'label'=>'Em dia'],
-                            ['nome'=>'Ponte Rio Uberabinha',        'cidade'=>'Uberlândia, MG', 'resp'=>'Ana Ferreira', 'pct'=>23, 'prazo'=>'20/03/2026', 'status'=>'badge-danger',  'label'=>'Atrasada'],
-                            ['nome'=>'Condomínio Solar Norte',     'cidade'=>'Uberaba, MG',    'resp'=>'Pedro Rocha',  'pct'=>55, 'prazo'=>'01/11/2025', 'status'=>'badge-success', 'label'=>'Em dia'],
-                        ];
-                        foreach ($obras as $o):
-                            $prog_class = $o['pct'] >= 70 ? 'success' : ($o['label'] === 'Atrasada' ? 'danger' : '');
+                        $progresso = $obra['progresso_pct'] ?? 0;
+
+                        if ($progresso >= 70) {
+                            $prog_class = 'success';
+                        } elseif ($progresso >= 40) {
+                            $prog_class = '';
+                        } else {
+                            $prog_class = 'danger';
+                        }
+
+                        $status = $obra['status'];
+
+                        if ($status == 'ativa') {
+                            $badge = 'badge-success';
+                            $label = 'Ativa';
+                        } else {
+                            $badge = 'badge-warning';
+                            $label = 'Pausada';
+                        }
+
+                        $prazoTexto = 'Não definida';
+                        $prazoCor = 'var(--muted)';
+
+                        if (!empty($obra['data_previsao'])) {
+
+                            $hoje = new DateTime();
+                            $previsao = new DateTime($obra['data_previsao']);
+
+                            $dias = (int)$hoje->diff($previsao)->format('%r%a');
+
+                            $prazoTexto = abs($dias) . ' dias';
+
+                            if ($dias < 15) {
+
+                                $prazoCor = 'var(--danger)';
+
+                            } elseif ($dias <= 30) {
+
+                                $prazoCor = 'var(--amber)';
+
+                            } else {
+
+                                $prazoCor = 'var(--success)';
+                            }
+                        }
                         ?>
+
                         <tr>
+
                             <td>
-                                <strong><?= htmlspecialchars($o['nome']) ?></strong><br>
-                                <small style="color:var(--muted)"><?= htmlspecialchars($o['cidade']) ?></small>
+                                <strong><?= htmlspecialchars($obra['nome']) ?></strong><br>
+
+                                <small style="color:var(--muted)">
+                                    <?= htmlspecialchars($obra['endereco'] ?? 'Sem endereço') ?>
+                                </small>
                             </td>
-                            <td><?= htmlspecialchars($o['resp']) ?></td>
+
                             <td>
-                                <span style="font-size:1.2rem"><?= $o['pct'] ?>%</span>
+                                <?= htmlspecialchars($obra['responsavel'] ?? 'Não definido') ?>
+                            </td>
+
+                            <td>
+
+                                <span style="font-size:1.2rem">
+                                    <?= $progresso ?>%
+                                </span>
+
                                 <div class="progress-bar">
-                                    <div class="progress-fill <?= $prog_class ?>" style="width:<?= $o['pct'] ?>%"></div>
+                                    <div 
+                                        class="progress-fill <?= $prog_class ?>" 
+                                        style="width:<?= $progresso ?>%"
+                                    ></div>
                                 </div>
+
                             </td>
-                            <td class="mono"><?= $o['prazo'] ?></td>
-                            <td><span class="badge <?= $o['status'] ?>"><?= $o['label'] ?></span></td>
+
+                            <td class="mono" style="color:<?= $prazoCor ?>;">
+                                <?= $prazoTexto ?>
+                            </td>
+
+                            <td>
+                                <span class="badge <?= $badge ?>">
+                                    <?= $label ?>
+                                </span>
+                            </td>
+
                         </tr>
+
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -118,28 +209,39 @@ include '../configs/header.php';
         <div>
 
             <div class="section-label">Atividade Recente</div>
+
             <div class="sidebar-card">
+
                 <div class="timeline">
-                    <?php
-                    $atividades = [
-                        ['icon'=>'📋', 'data'=>'Hoje, 09:14',   'texto'=>'Diário registrado — Residencial Jardins'],
-                        ['icon'=>'⚠️', 'data'=>'Hoje, 08:30',   'texto'=>'Ocorrência aberta — Atraso entrega de aço'],
-                        ['icon'=>'💰', 'data'=>'Ontem, 17:22',  'texto'=>'Custo lançado — R$ 18.400 em cimento'],
-                        ['icon'=>'✅', 'data'=>'Ontem, 15:00',  'texto'=>'Ocorrência encerrada — Vazamento resolvido'],
-                        ['icon'=>'📄', 'data'=>'22/05, 11:08',  'texto'=>'Relatório gerado — Reforma Escolar (Mensal)'],
-                    ];
-                    foreach ($atividades as $a): ?>
-                    <div class="timeline-item">
-                        <div class="timeline-dot"><?= $a['icon'] ?></div>
-                        <div class="timeline-content">
-                            <div class="timeline-date"><?= $a['data'] ?></div>
-                            <div class="timeline-text"><?= htmlspecialchars($a['texto']) ?></div>
+
+                    <?php foreach ($historicos as $h): ?>
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-dot">
+                                <?php if ($h['tipo'] == 'custo'): ?> 💰 <?php else: ?> ⚠️ <?php endif; ?>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">
+                                    <?= date('d/m/Y H:i', strtotime($h['criado_em'])) ?>
+                                </div>
+                                <div class="timeline-text">
+                                    <strong><?= htmlspecialchars($h['acao']) ?></strong><br>
+                                    <?= htmlspecialchars($h['descricao']) ?><br>
+
+                                    <small style="color:var(--muted)">
+                                        <?= $h['usuario'] ?? 'Sistema' ?>
+                                    </small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                     <?php endforeach; ?>
+
                 </div>
                 <div style="margin-top:1.6rem;text-align:center;">
-                    <a href="../diario/index.php" style="font-size:1.2rem;color:var(--amber)">Ver todo o histórico →</a>
+                    <a href="../custos/index.php" style="font-size:1.2rem;color:var(--amber)">
+                        Ver todo o histórico →
+                    </a>
                 </div>
             </div>
 
@@ -168,14 +270,6 @@ include '../configs/header.php';
                 <div style="margin-top:1.4rem;text-align:right;">
                     <a href="../custos/index.php" style="font-size:1.2rem;color:var(--amber)">Ver custos detalhados →</a>
                 </div>
-            </div>
-
-            <div class="section-label" style="margin-top:2rem;">Atalhos Rápidos</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
-                <a href="../obras/cadastrar.php" class="btn btn-secondary" style="justify-content:center;">🏗️ Nova Obra</a>
-                <a href="../diario/index.php"    class="btn btn-secondary" style="justify-content:center;">📋 Novo Diário</a>
-                <a href="../custos/index.php"    class="btn btn-secondary" style="justify-content:center;">💰 Lançar Custo</a>
-                <a href="../ocorrencias/index.php" class="btn btn-secondary" style="justify-content:center;">⚠️ Ocorrência</a>
             </div>
 
         </div>

@@ -1,6 +1,9 @@
 <?php
 require_once '../configs/banco.php';
 
+
+
+
 $sql = "INSERT INTO obras (
     nome, endereco, status, responsavel_id,
     data_inicio, data_previsao, data_fim,

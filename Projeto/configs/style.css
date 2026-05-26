@@ -107,6 +107,7 @@ body::before {
     color: var(--amber);
 }
 
+/* Navbar */
 .navbar {
     display: flex;
     align-items: center;
@@ -761,6 +762,52 @@ select option { background: var(--surface2); }
     text-align: center;
     font-size: 1.1rem;
     color: var(--muted);
+}
+
+button[type="submit"],
+button:not([class]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .8rem;
+    padding: .9rem 2rem;
+    margin-top: 2rem; /* espaço acima do botão */
+    border-radius: var(--radius);
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    background: var(--amber);
+    color: #000;
+    font-family: 'DM Sans', sans-serif;
+}
+
+button[type="submit"]:hover,
+button:not([class]):hover {
+    background: #F5BA58;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .9rem 2rem;
+    border-radius: var(--radius);
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: .04em;
+    background: rgba(232, 84, 84, .12);
+    color: var(--danger);
+    border: 1px solid rgba(232, 84, 84, .35);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-delete:hover {
+    background: rgba(232, 84, 84, .25);
+    transform: translateY(-1px);
 }
 
 @media (max-width: 1024px) {

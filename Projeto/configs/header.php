@@ -3,9 +3,9 @@
 $nav_items = [
     'dashboard'   => ['href' => '../dashboard/index.php', 'label' => 'Dashboard'],
     'obras'       => ['href' => '../obras/index.php',      'label' => 'Obras'],
-    'diario'      => ['href' => '../diario/index.php',     'label' => 'Diário da Obra'],
     'custos'      => ['href' => '../custos/index.php',     'label' => 'Materiais e Custos'],
     'ocorrencias' => ['href' => '../ocorrencias/index.php','label' => 'Ocorrências'],
+    'historico' => ['href' => '../historico/index.php','label' => 'Histórico']
 ];
 ?>
 <!DOCTYPE html>
@@ -13,6 +13,7 @@ $nav_items = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">

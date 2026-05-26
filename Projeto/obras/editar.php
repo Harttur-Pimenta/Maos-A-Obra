@@ -1,4 +1,5 @@
 <?php
+$current_page = 'obras';
 require_once '../configs/banco.php';
 include '../configs/header.php';
 
@@ -16,54 +17,63 @@ $stmtUsuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC");
 $usuarios = $stmtUsuarios->fetchAll();
 ?>
 
-<h1>Editar Obra</h1>
+<main class="main">
+<div class="container">
 
-<form action="atualizar.php" method="POST" class="formulario">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Obras <span>Editar</span></h1>
+            <p class="page-subtitle">Editar Dados do Projeto Selecionado</p>
+        </div>
+    </div>
 
-    <!-- input para o ID usado na consulta -->
-    <input type="hidden" name="id" value="<?= $obra['id'] ?>">
+    <form action="atualizar.php" method="POST" class="formulario">
 
-    <label>Nome da Obra</label>
-    <input type="text" name="nome" value="<?= htmlspecialchars($obra['nome']) ?>" required>
-    
-    <label>Endereço</label>
-    <textarea name="endereco"><?= htmlspecialchars($obra['endereco']) ?></textarea>
+        <!-- input para o ID usado na consulta -->
+        <input type="hidden" name="id" value="<?= $obra['id'] ?>">
 
-    <label>Status</label>
-    <select name="status">
-        <option value="ativa">Ativa</option>
-        <option value="pausada">Pausada</option>
-        <option value="finalizada">Finalizada</option>
-    </select>
+        <label>Nome da Obra</label>
+        <input type="text" name="nome" value="<?= htmlspecialchars($obra['nome']) ?>" required>
+        
+        <label>Endereço</label>
+        <textarea name="endereco"><?= htmlspecialchars($obra['endereco']) ?></textarea>
 
-    <label>Responsável</label>
-    <select name="responsavel_id">
-        <option value="">Selecione</option>
+        <label>Status</label>
+        <select name="status">
+            <option value="ativa">Ativa</option>
+            <option value="pausada">Pausada</option>
+            <option value="finalizada">Finalizada</option>
+        </select>
 
-        <?php foreach ($usuarios as $usuario): ?>
-            <option value="<?= $usuario['id'] ?>">
-                <?= htmlspecialchars($usuario['nome']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    
-    <label>Data de Início</label>
-    <input type="date" name="data_inicio" value="<?= htmlspecialchars($obra['data_inicio']) ?>" required>
+        <label>Responsável</label>
+        <select name="responsavel_id">
+            <option value="">Selecione</option>
 
-    <label>Data Prevista</label>
-    <input type="date" name="data_previsao" value="<?= htmlspecialchars($obra['data_previsao']) ?>" required>
+            <?php foreach ($usuarios as $usuario): ?>
+                <option value="<?= $usuario['id'] ?>">
+                    <?= htmlspecialchars($usuario['nome']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        
+        <label>Data de Início</label>
+        <input type="date" name="data_inicio" value="<?= htmlspecialchars($obra['data_inicio']) ?>" required>
 
-    <label>Data Final</label>
-    <input type="date" name="data_fim" value="<?= htmlspecialchars($obra['data_fim']) ?>" >
+        <label>Data Prevista</label>
+        <input type="date" name="data_previsao" value="<?= htmlspecialchars($obra['data_previsao']) ?>" required>
 
-    <label>Orçamento Total</label>
-    <input type="number" step="0.01" name="orcamento_total" value="<?= $obra['orcamento_total'] ?>">
+        <label>Data Final</label>
+        <input type="date" name="data_fim" value="<?= htmlspecialchars($obra['data_fim']) ?>" >
 
-    <label>Progresso (%)</label>
-    <input type="number" name="progresso_pct" min="0" max="100" value="<?= $obra['progresso_pct'] ?>">
+        <label>Orçamento Total</label>
+        <input type="number" step="0.01" name="orcamento_total" value="<?= $obra['orcamento_total'] ?>">
 
-    <button type="submit">Salvar</button>
-</form>
+        <label>Progresso (%)</label>
+        <input type="number" name="progresso_pct" min="0" max="100" value="<?= $obra['progresso_pct'] ?>">
 
+        <button type="submit">Salvar</button>
+    </form>
+
+</div>
 </main>
 </body>
