@@ -1,5 +1,15 @@
 <?php
 require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
+
+$obraId = (int) ($_POST['obra_id'] ?? 0);
+
+if (!$obraId || !obraPertenceAoUsuario($pdo, $obraId)) {
+    negarAcesso();
+}
+
+$usuarioRegistro = $_POST['usuario_id'] ?: usuarioId();
 
 $sql = "INSERT INTO ocorrencias (
             obra_id,
@@ -20,10 +30,9 @@ $sql = "INSERT INTO ocorrencias (
         )";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
-    ':obra_id' => $_POST['obra_id'],
-    ':usuario_id' => $_POST['usuario_id'] ?: null,
+    ':obra_id' => $obraId,
+    ':usuario_id' => $usuarioRegistro,
     ':titulo' => $_POST['titulo'],
     ':descricao' => $_POST['descricao'],
     ':categoria' => $_POST['categoria'],
@@ -31,5 +40,5 @@ $stmt->execute([
     ':prioridade' => $_POST['prioridade']
 ]);
 
-header('Location: index.php'); 
+header('Location: index.php');
 exit;

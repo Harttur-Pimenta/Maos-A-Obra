@@ -1,16 +1,16 @@
 <?php
 require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
 
-if (isset($_GET['id'])) {
+$id = (int) ($_GET['id'] ?? 0);
 
-    $sql = "DELETE FROM ocorrencias WHERE id = :id";
-
-    $stmt = $pdo->prepare($sql);
-
-    $stmt->execute([
-        ':id' => $_GET['id']
-    ]);
+if (!$id || !ocorrenciaPertenceAoUsuario($pdo, $id)) {
+    negarAcesso();
 }
+
+$stmt = $pdo->prepare('DELETE FROM ocorrencias WHERE id = :id');
+$stmt->execute([':id' => $id]);
 
 header('Location: index.php');
 exit;

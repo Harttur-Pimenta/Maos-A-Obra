@@ -1,8 +1,9 @@
 <?php
 require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
 
-
-
+$responsavelId = ehAdmin() ? ($_POST['responsavel_id'] ?: null) : usuarioId();
 
 $sql = "INSERT INTO obras (
     nome, endereco, status, responsavel_id,
@@ -15,12 +16,11 @@ $sql = "INSERT INTO obras (
 )";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     ':nome' => $_POST['nome'],
     ':endereco' => $_POST['endereco'],
     ':status' => $_POST['status'],
-    ':responsavel_id' => $_POST['responsavel_id'] ?: null,
+    ':responsavel_id' => $responsavelId,
     ':data_inicio' => $_POST['data_inicio'] ?: null,
     ':data_previsao' => $_POST['data_previsao'] ?: null,
     ':data_fim' => $_POST['data_fim'] ?: null,

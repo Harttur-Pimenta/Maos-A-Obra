@@ -1,35 +1,38 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 $current_page = 'custos';
-require_once '../configs/banco.php';
-include '../configs/header.php';
 
-$obras = $pdo->query("SELECT id, nome FROM obras ORDER BY nome ASC")->fetchAll();
-$usuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC")->fetchAll();
+require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
+
+if (ehEngenheiro()) {
+    $stmt = $pdo->prepare('SELECT id, nome FROM obras WHERE responsavel_id = :usuario_id ORDER BY nome ASC');
+    $stmt->execute([':usuario_id' => usuarioId()]);
+    $obras = $stmt->fetchAll();
+} else {
+    $obras = $pdo->query('SELECT id, nome FROM obras ORDER BY nome ASC')->fetchAll();
+}
+
+$usuarios = $pdo->query('SELECT id, nome FROM usuarios ORDER BY nome ASC')->fetchAll();
+
+include '../configs/header.php';
 ?>
 
 <main class="main">
 <div class="container">
-
     <div class="page-header">
         <div>
             <h1 class="page-title">Custos e Materiais <span>Cadastrar</span></h1>
-            <p class="page-subtitle">Inserir Novo Gastos</p>
+            <p class="page-subtitle">Inserir novo gasto</p>
         </div>
     </div>
 
     <form action="salvar.php" method="POST" class="formulario">
-
         <label>Obra</label>
         <select name="obra_id" required>
             <option value="">Selecione</option>
-
             <?php foreach ($obras as $obra): ?>
-                <option value="<?= $obra['id'] ?>">
-                    <?= htmlspecialchars($obra['nome']) ?>
-                </option>
+                <option value="<?= e($obra['id']) ?>"><?= e($obra['nome']) ?></option>
             <?php endforeach; ?>
         </select>
 
@@ -44,14 +47,11 @@ $usuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC")->fetc
             <option value="outro">Outro</option>
         </select>
 
-        <label>Responsável</label>
+        <label>Responsável pelo lançamento</label>
         <select name="usuario_id">
-            <option value="">Selecione</option>
-
+            <option value="">Sistema / não definido</option>
             <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['id'] ?>">
-                    <?= htmlspecialchars($usuario['nome']) ?>
-                </option>
+                <option value="<?= e($usuario['id']) ?>" <?= usuarioId() === (int) $usuario['id'] ? 'selected' : '' ?>><?= e($usuario['nome']) ?></option>
             <?php endforeach; ?>
         </select>
 
@@ -68,13 +68,11 @@ $usuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC")->fetc
         <input type="number" step="0.01" name="valor_realizado" value="0">
 
         <label>Data do Lançamento</label>
-        <input type="date" name="data_lancamento" required>
+        <input type="date" name="data_lancamento" value="<?= date('Y-m-d') ?>" required>
 
         <button type="submit">Salvar Custo</button>
-
     </form>
-
 </div>
 </main>
-</body>
-</html>
+
+<?php include '../configs/footer.php'; ?>

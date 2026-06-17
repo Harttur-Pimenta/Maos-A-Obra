@@ -842,3 +842,46 @@ button:not([class]):hover {
     opacity:.9;
     transform:translateY(-1px);
 }
+.user-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.1;
+}
+
+.user-summary strong {
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.user-summary small {
+    font-size: 1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.table-empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 2.4rem !important;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+    margin-bottom: 2.4rem;
+}
+
+.report-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.4rem;
+}
+
+@media (max-width: 768px) {
+    .user-summary { display: none; }
+    .report-grid { grid-template-columns: 1fr; }
+}

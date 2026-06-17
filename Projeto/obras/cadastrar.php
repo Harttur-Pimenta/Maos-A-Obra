@@ -1,27 +1,33 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 $current_page = 'obras';
-require_once '../configs/banco.php';
-include '../configs/header.php';
 
-$stmt = $pdo->query("SELECT * FROM usuarios ORDER BY nome ASC");
-$usuarios = $stmt->fetchAll();
+require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
+
+if (ehAdmin()) {
+    $stmt = $pdo->query("SELECT id, nome FROM usuarios WHERE perfil IN ('admin','engenheiro','tecnico') ORDER BY nome ASC");
+    $usuarios = $stmt->fetchAll();
+} else {
+    $usuarios = [[
+        'id' => usuarioId(),
+        'nome' => usuarioNome()
+    ]];
+}
+
+include '../configs/header.php';
 ?>
 
 <main class="main">
 <div class="container">
-
     <div class="page-header">
         <div>
             <h1 class="page-title">Obras <span>Cadastrar</span></h1>
-            <p class="page-subtitle">Inserir Dados do Novo Projeto</p>
+            <p class="page-subtitle">Inserir dados do novo projeto</p>
         </div>
     </div>
 
     <form action="salvar.php" method="POST" class="formulario">
-
         <label>Nome da Obra</label>
         <input type="text" name="nome" required>
 
@@ -36,12 +42,9 @@ $usuarios = $stmt->fetchAll();
         </select>
 
         <label>Responsável</label>
-        <select name="responsavel_id">
-            <option value="">Selecione</option>
+        <select name="responsavel_id" required>
             <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['id'] ?>">
-                    <?= htmlspecialchars($usuario['nome']) ?>
-                </option>
+                <option value="<?= e($usuario['id']) ?>"><?= e($usuario['nome']) ?></option>
             <?php endforeach; ?>
         </select>
 
@@ -61,10 +64,8 @@ $usuarios = $stmt->fetchAll();
         <input type="number" name="progresso_pct" min="0" max="100" value="0">
 
         <button type="submit">Salvar</button>
-
     </form>
-
 </div>
 </main>
-</body>
-</html>
+
+<?php include '../configs/footer.php'; ?>

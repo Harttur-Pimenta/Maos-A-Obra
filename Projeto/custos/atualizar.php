@@ -1,5 +1,16 @@
 <?php
 require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
+
+$id = (int) ($_POST['id'] ?? 0);
+$obraId = (int) ($_POST['obra_id'] ?? 0);
+
+if (!$id || !$obraId || !custoPertenceAoUsuario($pdo, $id) || !obraPertenceAoUsuario($pdo, $obraId)) {
+    negarAcesso();
+}
+
+$usuarioLancamento = $_POST['usuario_id'] ?: usuarioId();
 
 $sql = "UPDATE custos_obra SET
             obra_id = :obra_id,
@@ -14,10 +25,9 @@ $sql = "UPDATE custos_obra SET
         WHERE id = :id";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
-    ':obra_id' => $_POST['obra_id'],
-    ':usuario_id' => $_POST['usuario_id'] ?: null,
+    ':obra_id' => $obraId,
+    ':usuario_id' => $usuarioLancamento,
     ':descricao' => $_POST['descricao'],
     ':tipo' => $_POST['tipo'],
     ':qtd_planejada' => $_POST['qtd_planejada'] ?: 0,
@@ -25,7 +35,7 @@ $stmt->execute([
     ':valor_planejado' => $_POST['valor_planejado'] ?: 0,
     ':valor_realizado' => $_POST['valor_realizado'] ?: 0,
     ':data_lancamento' => $_POST['data_lancamento'] ?: null,
-    ':id' => $_POST['id']
+    ':id' => $id
 ]);
 
 header('Location: index.php');

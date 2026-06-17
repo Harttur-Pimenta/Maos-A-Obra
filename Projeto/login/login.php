@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($usuario) {
 
-        if (md5($senha) === $usuario['senha_hash']) {
+        if (password_verify($senha, $usuario['senha_hash']) || md5($senha) === $usuario['senha_hash']) {
 
             $_SESSION['usuario_id'] = $usuario['id'];
             $_SESSION['usuario_nome'] = $usuario['nome'];

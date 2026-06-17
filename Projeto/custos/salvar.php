@@ -1,5 +1,15 @@
 <?php
 require_once '../configs/banco.php';
+require_once '../configs/auth.php';
+exigirLogin();
+
+$obraId = (int) ($_POST['obra_id'] ?? 0);
+
+if (!$obraId || !obraPertenceAoUsuario($pdo, $obraId)) {
+    negarAcesso();
+}
+
+$usuarioLancamento = $_POST['usuario_id'] ?: usuarioId();
 
 $sql = "INSERT INTO custos_obra (
     obra_id, usuario_id, descricao, tipo,
@@ -12,10 +22,9 @@ $sql = "INSERT INTO custos_obra (
 )";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
-    ':obra_id' => $_POST['obra_id'],
-    ':usuario_id' => $_POST['usuario_id'] ?: null,
+    ':obra_id' => $obraId,
+    ':usuario_id' => $usuarioLancamento,
     ':descricao' => $_POST['descricao'],
     ':tipo' => $_POST['tipo'],
     ':qtd_planejada' => $_POST['qtd_planejada'] ?: 0,

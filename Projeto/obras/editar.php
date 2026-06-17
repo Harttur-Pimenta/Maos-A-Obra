@@ -1,82 +1,89 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 $current_page = 'obras';
+
 require_once '../configs/banco.php';
-include '../configs/header.php';
+require_once '../configs/auth.php';
+exigirLogin();
 
-$id = $_GET['id'] ?? null;
+$id = (int) ($_GET['id'] ?? 0);
 
-$sql = "SELECT * FROM obras WHERE id = :id";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([
-    ':id' => $id
-]);
+if (!$id || !obraPertenceAoUsuario($pdo, $id)) {
+    negarAcesso();
+}
 
+$stmt = $pdo->prepare('SELECT * FROM obras WHERE id = :id');
+$stmt->execute([':id' => $id]);
 $obra = $stmt->fetch();
 
-$stmtUsuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC");
-$usuarios = $stmtUsuarios->fetchAll();
+if (!$obra) {
+    die('Obra não encontrada.');
+}
+
+if (ehAdmin()) {
+    $stmtUsuarios = $pdo->query("SELECT id, nome FROM usuarios WHERE perfil IN ('admin','engenheiro','tecnico') ORDER BY nome ASC");
+    $usuarios = $stmtUsuarios->fetchAll();
+} else {
+    $usuarios = [[
+        'id' => usuarioId(),
+        'nome' => usuarioNome()
+    ]];
+}
+
+include '../configs/header.php';
 ?>
 
 <main class="main">
 <div class="container">
-
     <div class="page-header">
         <div>
             <h1 class="page-title">Obras <span>Editar</span></h1>
-            <p class="page-subtitle">Editar Dados do Projeto Selecionado</p>
+            <p class="page-subtitle">Editar dados do projeto selecionado</p>
         </div>
     </div>
 
     <form action="atualizar.php" method="POST" class="formulario">
-
-        <!-- input para o ID usado na consulta -->
-        <input type="hidden" name="id" value="<?= $obra['id'] ?>">
+        <input type="hidden" name="id" value="<?= e($obra['id']) ?>">
 
         <label>Nome da Obra</label>
-        <input type="text" name="nome" value="<?= htmlspecialchars($obra['nome']) ?>" required>
-        
+        <input type="text" name="nome" value="<?= e($obra['nome']) ?>" required>
+
         <label>Endereço</label>
-        <textarea name="endereco"><?= htmlspecialchars($obra['endereco']) ?></textarea>
+        <textarea name="endereco"><?= e($obra['endereco']) ?></textarea>
 
         <label>Status</label>
         <select name="status">
-            <option value="ativa">Ativa</option>
-            <option value="pausada">Pausada</option>
-            <option value="finalizada">Finalizada</option>
+            <option value="ativa" <?= $obra['status'] === 'ativa' ? 'selected' : '' ?>>Ativa</option>
+            <option value="pausada" <?= $obra['status'] === 'pausada' ? 'selected' : '' ?>>Pausada</option>
+            <option value="finalizada" <?= $obra['status'] === 'finalizada' ? 'selected' : '' ?>>Finalizada</option>
         </select>
 
         <label>Responsável</label>
-        <select name="responsavel_id">
-            <option value="">Selecione</option>
-
+        <select name="responsavel_id" required>
             <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['id'] ?>">
-                    <?= htmlspecialchars($usuario['nome']) ?>
+                <option value="<?= e($usuario['id']) ?>" <?= (int) $obra['responsavel_id'] === (int) $usuario['id'] ? 'selected' : '' ?>>
+                    <?= e($usuario['nome']) ?>
                 </option>
             <?php endforeach; ?>
         </select>
-        
+
         <label>Data de Início</label>
-        <input type="date" name="data_inicio" value="<?= htmlspecialchars($obra['data_inicio']) ?>" required>
+        <input type="date" name="data_inicio" value="<?= e($obra['data_inicio']) ?>">
 
         <label>Data Prevista</label>
-        <input type="date" name="data_previsao" value="<?= htmlspecialchars($obra['data_previsao']) ?>" required>
+        <input type="date" name="data_previsao" value="<?= e($obra['data_previsao']) ?>">
 
         <label>Data Final</label>
-        <input type="date" name="data_fim" value="<?= htmlspecialchars($obra['data_fim']) ?>" >
+        <input type="date" name="data_fim" value="<?= e($obra['data_fim']) ?>">
 
         <label>Orçamento Total</label>
-        <input type="number" step="0.01" name="orcamento_total" value="<?= $obra['orcamento_total'] ?>">
+        <input type="number" step="0.01" name="orcamento_total" value="<?= e($obra['orcamento_total']) ?>">
 
         <label>Progresso (%)</label>
-        <input type="number" name="progresso_pct" min="0" max="100" value="<?= $obra['progresso_pct'] ?>">
+        <input type="number" name="progresso_pct" min="0" max="100" value="<?= e($obra['progresso_pct']) ?>">
 
         <button type="submit">Salvar</button>
     </form>
-
 </div>
 </main>
-</body>
+
+<?php include '../configs/footer.php'; ?>
